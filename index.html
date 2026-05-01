@@ -15,15 +15,14 @@
             --text: #e8eaf0;
             --muted: #6b7280;
             --green: #00e676;
+            --red: #ff1744;
         }
 
-        /* Mobile Optimization & Fix for Google Search Popups */
         * { 
             box-sizing: border-box; 
             margin: 0; padding: 0; 
             -webkit-tap-highlight-color: transparent; 
             user-select: none; 
-            touch-action: manipulation;
         }
 
         body { 
@@ -32,7 +31,6 @@
             font-family: 'Rajdhani', sans-serif;
             display: flex;
             justify-content: center;
-            overflow-x: hidden;
         }
 
         .app-container {
@@ -41,108 +39,95 @@
             min-height: 100vh;
             background: var(--bg);
             padding-bottom: 90px;
+            position: relative;
         }
 
         /* Header */
         .header {
             background: var(--card);
             border-bottom: 1px solid var(--border);
-            padding: 15px 20px;
+            padding: 18px 20px;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             position: sticky; top: 0; z-index: 100;
         }
 
-        .logo { font-family: 'Oswald'; color: var(--accent); font-weight: 700; font-size: 22px; }
-
-        .wallet-badge {
-            background: rgba(245, 166, 35, 0.1);
-            border: 1px solid var(--accent);
-            padding: 6px 14px;
-            border-radius: 8px;
-            color: var(--accent);
-            font-family: 'Oswald';
-            font-weight: 700;
-            cursor: pointer;
+        .logo { 
+            font-family: 'Oswald'; color: var(--accent); 
+            font-weight: 700; font-size: 24px; cursor: pointer; letter-spacing: 1px;
         }
+
+        /* Views */
+        .view-section { display: none; padding: 10px 0; }
+        .view-section.active { display: block; }
 
         /* Profile Card */
         .profile-card {
             background: linear-gradient(135deg, #1a1200, #111318);
-            margin: 16px;
-            padding: 20px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
+            margin: 16px; padding: 20px;
+            border-radius: 16px; border: 1px solid var(--border);
         }
 
         .user-info { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .user-info img { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--accent); }
-        .user-name { font-family: 'Oswald'; font-size: 20px; color: #fff; }
+        .user-info img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--accent); }
+        .user-name { font-family: 'Oswald'; font-size: 22px; color: #fff; }
 
         .balance-container {
             background: rgba(255,255,255,0.03);
-            padding: 15px;
-            border-radius: 12px;
+            padding: 15px; border-radius: 12px;
             border: 1px solid rgba(245,166,35,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: flex; justify-content: space-between; align-items: center;
         }
 
         /* Tournament Cards */
-        .section-title { margin: 20px 16px 10px; font-family: 'Oswald'; color: var(--accent); }
+        .section-title { margin: 20px 16px 10px; font-family: 'Oswald'; color: var(--accent); font-size: 18px;}
 
         .match-card {
-            background: var(--card);
-            margin: 12px 16px;
-            padding: 18px;
-            border-radius: 14px;
-            border: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background: var(--card); margin: 12px 16px; padding: 18px;
+            border-radius: 14px; border: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
         }
 
-        .match-title { font-weight: 700; font-size: 17px; margin-bottom: 4px; }
+        .match-title { font-weight: 700; font-size: 17px; margin-bottom: 4px; color: #fff; }
         .match-meta { font-size: 12px; color: var(--muted); }
         .match-prize { color: #FFD700; font-size: 14px; font-weight: 700; margin-top: 8px; }
 
-        .btn-join {
-            background: var(--accent);
-            color: #000;
-            border: none;
-            padding: 10px 22px;
-            border-radius: 8px;
-            font-family: 'Oswald';
-            font-weight: 700;
-            cursor: pointer;
+        .btn {
+            background: var(--accent); color: #000; border: none;
+            padding: 10px 20px; border-radius: 8px;
+            font-family: 'Oswald'; font-weight: 700; cursor: pointer;
         }
+
+        .btn-small { padding: 6px 15px; font-size: 12px; }
+        .btn-green { background: var(--green); color: #000; }
+        .btn-red { background: var(--red); color: #fff; }
 
         /* Navigation */
         .nav-bar {
             position: fixed; bottom: 0; width: 100%; max-width: 480px;
             background: var(--card);
             display: flex; justify-content: space-around;
-            padding: 15px 0; border-top: 1px solid var(--border);
-            z-index: 1000;
+            padding: 12px 0; border-top: 1px solid var(--border); z-index: 1000;
         }
 
-        .nav-item { color: var(--muted); font-size: 11px; text-align: center; cursor: pointer; }
-        .nav-item.active { color: var(--accent); }
+        .nav-item { 
+            color: var(--muted); font-size: 11px; text-align: center; 
+            cursor: pointer; padding: 5px 10px; border-radius: 8px;
+        }
+        .nav-item.active { color: var(--accent); background: rgba(245, 166, 35, 0.1); }
 
-        /* Payment Modal */
-        .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            display: none; justify-content: center; align-items: center;
-            z-index: 2000;
+        /* Admin Panel Styles */
+        .admin-card {
+            background: var(--card); border: 1px solid var(--border);
+            padding: 15px; border-radius: 10px; margin: 10px 16px;
         }
-        .modal-content {
-            background: var(--card);
-            width: 90%; padding: 25px; border-radius: 20px;
-            border: 1px solid var(--border); text-align: center;
+        .req-item {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border); padding: 10px 0;
         }
+        .req-item:last-child { border-bottom: none; }
+
     </style>
 </head>
 <body>
@@ -150,78 +135,217 @@
     <div class="app-container">
         
         <header class="header">
-            <div class="logo">PUBG ARENA PK</div>
-            <div class="wallet-badge" onclick="showModal()">Rs. 2,450</div>
+            <div class="logo" onclick="checkAdmin()">🎯 PUBG ARENA PK</div>
         </header>
 
-        <div class="profile-card">
-            <div class="user-info">
-                <img src="https://i.pravatar.cc/150?u=rafay" alt="user">
-                <div>
-                    <div class="user-name">Rafay_Ali_PK ✦</div>
-                    <div style="font-size: 11px; color: var(--muted);">LEVEL: 12 | RANK: ACE</div>
+        <div id="view-home" class="view-section active">
+            <div class="profile-card">
+                <div class="user-info">
+                    <img src="https://i.pravatar.cc/150?u=rafay" alt="user">
+                    <div>
+                        <div class="user-name">Rafay_Ali_PK ✦</div>
+                        <div style="font-size: 11px; color: var(--muted);">LEVEL: 12 | RANK: ACE</div>
+                    </div>
+                </div>
+                <div class="balance-container">
+                    <div>
+                        <span style="font-size: 11px; color: var(--muted);">WALLET BALANCE</span>
+                        <div id="home-balance" style="font-size: 28px; color: var(--accent); font-family: 'Oswald';">Rs. 0</div>
+                    </div>
+                    <button class="btn btn-small" onclick="alert('Wallet page me jake deposit karein')">ADD CASH</button>
                 </div>
             </div>
-            <div class="balance-container">
-                <div>
-                    <span style="font-size: 11px; color: var(--muted);">WALLET BALANCE</span>
-                    <div style="font-size: 28px; color: var(--accent); font-family: 'Oswald';">Rs. 2,450</div>
+
+            <h3 class="section-title">🔥 LIVE TOURNAMENTS</h3>
+            <div id="home-matches-container"></div>
+        </div>
+
+        <div id="view-matches" class="view-section">
+            <h3 class="section-title">⚔️ ALL MATCHES</h3>
+            <div id="all-matches-container"></div>
+        </div>
+
+        <div id="view-history" class="view-section">
+            <h3 class="section-title">📋 MY HISTORY</h3>
+            <div class="admin-card" style="text-align: center; padding: 40px 20px;">
+                <div style="font-size: 40px; margin-bottom: 10px;">📭</div>
+                <div style="color: var(--muted);">Abhi tak koi match nahi khela</div>
+            </div>
+        </div>
+
+        <div id="view-profile" class="view-section">
+            <h3 class="section-title">👤 MY PROFILE</h3>
+            <div class="profile-card" style="text-align: center;">
+                <img src="https://i.pravatar.cc/150?u=rafay" style="width:80px; height:80px; border-radius:50%; border:3px solid var(--accent); margin-bottom: 10px;">
+                <div class="user-name">Rafay_Ali_PK</div>
+                <div style="color: var(--muted); font-size: 12px; margin-bottom: 20px;">UID: 5849-PK-2024</div>
+                
+                <div style="background: #0a0c10; padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
+                    <div style="color: var(--muted); font-size: 12px;">AVAILABLE BALANCE</div>
+                    <div id="profile-balance" style="color: var(--accent); font-size: 36px; font-family: 'Oswald'; font-weight: 700;">Rs. 0</div>
                 </div>
-                <button class="btn-join" style="padding: 6px 15px; font-size: 12px;" onclick="showModal()">ADD CASH</button>
+
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn btn-green" style="flex: 1;" onclick="alert('WhatsApp par Rs. bhejne ke baad Admin approve karega!')">💳 DEPOSIT</button>
+                    <button class="btn btn-red" style="flex: 1;" onclick="alert('Withdraw request sent! Admin approve karega.')">🏧 WITHDRAW</button>
+                </div>
             </div>
         </div>
 
-        <h3 class="section-title">🔥 LIVE TOURNAMENTS</h3>
-
-        <div class="match-card">
-            <div>
-                <div class="match-title">Erangel Classic (Squad)</div>
-                <div class="match-meta">🗺 Erangel | ⏰ 09:00 PM</div>
-                <div class="match-prize">WINNER: Rs. 5,000</div>
-                <div style="font-size: 11px; color: var(--accent);">Entry: Rs. 50</div>
+        <div id="view-admin" class="view-section">
+            <h3 class="section-title" style="color: #ff1744;">🛠️ ADMIN DASHBOARD</h3>
+            
+            <div class="admin-card">
+                <div style="font-family: 'Oswald'; font-size: 16px; margin-bottom: 10px; color: var(--green);">💰 DEPOSIT REQUESTS</div>
+                <div id="deposit-requests"></div>
             </div>
-            <button class="btn-join" onclick="showModal()">JOIN</button>
+
+            <div class="admin-card">
+                <div style="font-family: 'Oswald'; font-size: 16px; margin-bottom: 10px; color: var(--red);">💸 WITHDRAW REQUESTS</div>
+                <div id="withdraw-requests"></div>
+            </div>
+            
+            <div class="admin-card">
+                <button class="btn" style="width: 100%;" onclick="switchTab('home')">LOGOUT ADMIN</button>
+            </div>
         </div>
 
-        <div class="match-card">
-            <div>
-                <div class="match-title">Livik Rush (Duo)</div>
-                <div class="match-meta">🗺 Livik | ⏰ 10:30 PM</div>
-                <div class="match-prize">WINNER: Rs. 2,000</div>
-                <div style="font-size: 11px; color: var(--accent);">Entry: Rs. 30</div>
-            </div>
-            <button class="btn-join" onclick="showModal()">JOIN</button>
-        </div>
-
-        <nav class="nav-bar">
-            <div class="nav-item active">🏠<br>Home</div>
-            <div class="nav-item">⚔️<br>Matches</div>
-            <div class="nav-item">📋<br>History</div>
-            <div class="nav-item">👤<br>Profile</div>
+        <nav class="nav-bar" id="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('home')">🏠<br>Home</div>
+            <div class="nav-item" onclick="switchTab('matches')">⚔️<br>Matches</div>
+            <div class="nav-item" onclick="switchTab('history')">📋<br>History</div>
+            <div class="nav-item" onclick="switchTab('profile')">👤<br>Profile</div>
         </nav>
     </div>
 
-    <div id="payModal" class="modal">
-        <div class="modal-content">
-            <h2 style="font-family: 'Oswald'; color: var(--accent); margin-bottom: 10px;">DEPOSIT FUNDS</h2>
-            <p style="color: var(--muted); font-size: 14px; margin-bottom: 20px;">Easypaisa / JazzCash karke WhatsApp par screenshot bhein.</p>
-            
-            <div style="background: #000; padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px;">
-                <div style="color: var(--green); font-size: 12px; font-weight: bold;">ACCOUNT DETAILS</div>
-                <div style="font-size: 22px; font-family: 'Oswald'; color: #fff; margin: 5px 0;">0300-1234567</div>
-                <div style="font-size: 12px; color: var(--muted);">TITLE: RAFAY ALI</div>
-            </div>
-
-            <button class="btn-join" style="width: 100%; margin-bottom: 10px;" onclick="window.open('https://wa.me/923001234567')">SEND ON WHATSAPP</button>
-            <button class="btn-join" style="width: 100%; background: transparent; border: 1px solid var(--border); color: #fff;" onclick="hideModal()">CLOSE</button>
-        </div>
-    </div>
-
     <script>
-        function showModal() { document.getElementById('payModal').style.display = 'flex'; }
-        function hideModal() { document.getElementById('payModal').style.display = 'none'; }
-    </script>
+        // --- DATA (Frontend Database) ---
+        let userBalance = 2450;
 
+        let matches = [
+            { id: 1, name: "Erangel Classic (Squad)", map: "Erangel", time: "09:00 PM", prize: 5000, fee: 50 },
+            { id: 2, name: "Livik Rush (Duo)", map: "Livik", time: "10:30 PM", prize: 2000, fee: 30 }
+        ];
+
+        let deposits = [
+            { id: 1, user: "Ali Bhai", amount: 500, method: "Easypaisa" },
+            { id: 2, user: "Ahmed PK", amount: 150, method: "JazzCash" }
+        ];
+
+        let withdraws = [
+            { id: 1, user: "Rafay_Ali_PK", amount: 800, method: "Easypaisa" }
+        ];
+
+        // --- RENDER FUNCTIONS ---
+        function updateBalanceUI() {
+            document.getElementById('home-balance').innerText = "Rs. " + userBalance;
+            document.getElementById('profile-balance').innerText = "Rs. " + userBalance;
+        }
+
+        function renderMatches() {
+            let html = "";
+            matches.forEach(m => {
+                html += `
+                <div class="match-card">
+                    <div>
+                        <div class="match-title">${m.name}</div>
+                        <div class="match-meta">🗺 ${m.map} | ⏰ ${m.time}</div>
+                        <div class="match-prize">WINNER: Rs. ${m.prize}</div>
+                        <div style="font-size: 11px; color: var(--accent);">Entry: Rs. ${m.fee}</div>
+                    </div>
+                    <button class="btn" onclick="alert('Match Joining logic yahan aayegi!')">JOIN</button>
+                </div>`;
+            });
+            document.getElementById('home-matches-container').innerHTML = html;
+            document.getElementById('all-matches-container').innerHTML = html;
+        }
+
+        function renderAdmin() {
+            // Render Deposits
+            let depHtml = deposits.length === 0 ? "<div style='color:gray; font-size:12px;'>No pending deposits</div>" : "";
+            deposits.forEach((d, index) => {
+                depHtml += `
+                <div class="req-item">
+                    <div>
+                        <div style="font-weight: bold; font-size: 14px;">${d.user}</div>
+                        <div style="font-size: 12px; color: var(--muted);">${d.method}: Rs. ${d.amount}</div>
+                    </div>
+                    <button class="btn btn-small btn-green" onclick="approveDeposit(${index}, ${d.amount})">APPROVE</button>
+                </div>`;
+            });
+            document.getElementById('deposit-requests').innerHTML = depHtml;
+
+            // Render Withdraws
+            let withHtml = withdraws.length === 0 ? "<div style='color:gray; font-size:12px;'>No pending withdraws</div>" : "";
+            withdraws.forEach((w, index) => {
+                withHtml += `
+                <div class="req-item">
+                    <div>
+                        <div style="font-weight: bold; font-size: 14px;">${w.user}</div>
+                        <div style="font-size: 12px; color: var(--muted);">${w.method}: Rs. ${w.amount}</div>
+                    </div>
+                    <button class="btn btn-small btn-red" onclick="approveWithdraw(${index}, ${w.amount})">APPROVE</button>
+                </div>`;
+            });
+            document.getElementById('withdraw-requests').innerHTML = withHtml;
+        }
+
+        // --- LOGIC FUNCTIONS ---
+        function switchTab(tabName) {
+            // Hide all views
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            // Remove active class from nav
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+            // Show selected view
+            document.getElementById('view-' + tabName).classList.add('active');
+
+            // Add active class to nav (if not admin)
+            if(tabName !== 'admin') {
+                let navItems = document.querySelectorAll('.nav-item');
+                if(tabName === 'home') navItems[0].classList.add('active');
+                if(tabName === 'matches') navItems[1].classList.add('active');
+                if(tabName === 'history') navItems[2].classList.add('active');
+                if(tabName === 'profile') navItems[3].classList.add('active');
+            }
+        }
+
+        // Secret Admin Check
+        function checkAdmin() {
+            let pass = prompt("Secret Admin Panel\nPassword enter karein:");
+            if(pass === "admin123") {
+                switchTab('admin');
+                renderAdmin();
+            } else if(pass !== null) {
+                alert("Wrong Password!");
+            }
+        }
+
+        // Admin Actions
+        function approveDeposit(index, amount) {
+            userBalance += amount; // Add balance to user
+            deposits.splice(index, 1); // Remove from list
+            updateBalanceUI();
+            renderAdmin();
+            alert(`Rs. ${amount} Approved! Balance Updated.`);
+        }
+
+        function approveWithdraw(index, amount) {
+            if(userBalance >= amount) {
+                userBalance -= amount; // Deduct balance
+                withdraws.splice(index, 1); // Remove from list
+                updateBalanceUI();
+                renderAdmin();
+                alert(`Withdrawal of Rs. ${amount} Approved!`);
+            } else {
+                alert("User ka balance kam hai!");
+            }
+        }
+
+        // --- INITIALIZE APP ---
+        updateBalanceUI();
+        renderMatches();
+    </script>
 </body>
 </html>
 
