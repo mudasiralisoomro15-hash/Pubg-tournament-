@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PUBG ARENA PK</title>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -12,17 +12,18 @@
             --card: #111318;
             --border: #1e2330;
             --accent: #f5a623;
-            --green: #00e676;
             --text: #e8eaf0;
             --muted: #6b7280;
+            --green: #00e676;
         }
 
-        /* Anti-Highlight & Selection Fix for Mobile */
+        /* Mobile Optimization & Fix for Google Search Popups */
         * { 
             box-sizing: border-box; 
             margin: 0; padding: 0; 
             -webkit-tap-highlight-color: transparent; 
             user-select: none; 
+            touch-action: manipulation;
         }
 
         body { 
@@ -31,49 +32,15 @@
             font-family: 'Rajdhani', sans-serif;
             display: flex;
             justify-content: center;
+            overflow-x: hidden;
         }
 
-        /* Login Screen */
-        #login-screen {
-            height: 100vh;
-            width: 100%;
-            max-width: 480px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: radial-gradient(circle at top, #f5a62322, transparent);
-        }
-
-        .btn {
-            background: var(--accent);
-            color: #000;
-            padding: 12px 24px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Oswald', sans-serif;
-            margin-top: 15px;
-            width: 80%;
-            font-size: 16px;
-            text-align: center;
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: var(--text);
-            border: 1px solid var(--border);
-        }
-
-        /* Main Container */
         .app-container {
             width: 100%;
             max-width: 480px;
             min-height: 100vh;
             background: var(--bg);
-            padding-bottom: 80px;
-            display: none; /* Hidden by default */
+            padding-bottom: 90px;
         }
 
         /* Header */
@@ -87,12 +54,12 @@
             position: sticky; top: 0; z-index: 100;
         }
 
-        .logo { font-family: 'Oswald'; color: var(--accent); font-weight: 700; font-size: 20px; }
+        .logo { font-family: 'Oswald'; color: var(--accent); font-weight: 700; font-size: 22px; }
 
         .wallet-badge {
             background: rgba(245, 166, 35, 0.1);
             border: 1px solid var(--accent);
-            padding: 5px 12px;
+            padding: 6px 14px;
             border-radius: 8px;
             color: var(--accent);
             font-family: 'Oswald';
@@ -110,36 +77,46 @@
         }
 
         .user-info { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .user-info img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--accent); }
+        .user-info img { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--accent); }
+        .user-name { font-family: 'Oswald'; font-size: 20px; color: #fff; }
 
-        /* Tournament Card */
+        .balance-container {
+            background: rgba(255,255,255,0.03);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(245,166,35,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Tournament Cards */
+        .section-title { margin: 20px 16px 10px; font-family: 'Oswald'; color: var(--accent); }
+
         .match-card {
             background: var(--card);
-            margin: 10px 16px;
-            padding: 16px;
-            border-radius: 12px;
+            margin: 12px 16px;
+            padding: 18px;
+            border-radius: 14px;
             border: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        /* Modals (Popups) */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: none; justify-content: center; align-items: center;
-            z-index: 200;
-        }
+        .match-title { font-weight: 700; font-size: 17px; margin-bottom: 4px; }
+        .match-meta { font-size: 12px; color: var(--muted); }
+        .match-prize { color: #FFD700; font-size: 14px; font-weight: 700; margin-top: 8px; }
 
-        .modal-content {
-            background: var(--card);
-            padding: 20px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
+        .btn-join {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-family: 'Oswald';
+            font-weight: 700;
+            cursor: pointer;
         }
 
         /* Navigation */
@@ -147,51 +124,104 @@
             position: fixed; bottom: 0; width: 100%; max-width: 480px;
             background: var(--card);
             display: flex; justify-content: space-around;
-            padding: 12px 0; border-top: 1px solid var(--border);
+            padding: 15px 0; border-top: 1px solid var(--border);
+            z-index: 1000;
         }
 
-        .nav-item { color: var(--muted); font-size: 12px; text-align: center; cursor: pointer; }
+        .nav-item { color: var(--muted); font-size: 11px; text-align: center; cursor: pointer; }
         .nav-item.active { color: var(--accent); }
-        
-        /* WhatsApp Floating Button */
-        .wa-btn {
-            position: fixed; bottom: 80px; right: 20px;
-            background: #25D366; color: white;
-            width: 50px; height: 50px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 24px; text-decoration: none;
-            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
-            z-index: 150;
+
+        /* Payment Modal */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none; justify-content: center; align-items: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background: var(--card);
+            width: 90%; padding: 25px; border-radius: 20px;
+            border: 1px solid var(--border); text-align: center;
         }
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
-        <h1 style="font-family: 'Oswald'; color: var(--accent); margin-bottom: 10px;">🎯 PUBG ARENA PK</h1>
-        <p style="color: var(--muted); margin-bottom: 30px;">Pakistan's Best Tournament Platform</p>
-        
-        <button class="btn btn-outline" style="opacity: 0.5;">SIGN IN WITH GOOGLE (Soon)</button>
-        <button class="btn" onclick="enterApp()">DEMO LOGIN</button>
-    </div>
-
-    <div id="app-content" class="app-container">
+    <div class="app-container">
         
         <header class="header">
-            <div class="logo">PUBG ARENA</div>
-            <div class="wallet-badge" onclick="openModal('deposit-modal')">➕ Rs. 100</div>
+            <div class="logo">PUBG ARENA PK</div>
+            <div class="wallet-badge" onclick="showModal()">Rs. 2,450</div>
         </header>
 
         <div class="profile-card">
             <div class="user-info">
-                <img src="https://i.pravatar.cc/150?img=11" alt="user">
+                <img src="https://i.pravatar.cc/150?u=rafay" alt="user">
                 <div>
-                    <div style="font-family: 'Oswald'; font-size: 18px;">ProPlayer_PK</div>
-                    <div style="font-size: 11px; color: var(--muted);">LEVEL 1 | ROOKIE</div>
+                    <div class="user-name">Rafay_Ali_PK ✦</div>
+                    <div style="font-size: 11px; color: var(--muted);">LEVEL: 12 | RANK: ACE</div>
                 </div>
             </div>
-            <div style="background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="balance-container">
                 <div>
                     <span style="font-size: 11px; color: var(--muted);">WALLET BALANCE</span>
-                    <div style="font-size: 24px; color: var(--accent); font-family: '
+                    <div style="font-size: 28px; color: var(--accent); font-family: 'Oswald';">Rs. 2,450</div>
+                </div>
+                <button class="btn-join" style="padding: 6px 15px; font-size: 12px;" onclick="showModal()">ADD CASH</button>
+            </div>
+        </div>
+
+        <h3 class="section-title">🔥 LIVE TOURNAMENTS</h3>
+
+        <div class="match-card">
+            <div>
+                <div class="match-title">Erangel Classic (Squad)</div>
+                <div class="match-meta">🗺 Erangel | ⏰ 09:00 PM</div>
+                <div class="match-prize">WINNER: Rs. 5,000</div>
+                <div style="font-size: 11px; color: var(--accent);">Entry: Rs. 50</div>
+            </div>
+            <button class="btn-join" onclick="showModal()">JOIN</button>
+        </div>
+
+        <div class="match-card">
+            <div>
+                <div class="match-title">Livik Rush (Duo)</div>
+                <div class="match-meta">🗺 Livik | ⏰ 10:30 PM</div>
+                <div class="match-prize">WINNER: Rs. 2,000</div>
+                <div style="font-size: 11px; color: var(--accent);">Entry: Rs. 30</div>
+            </div>
+            <button class="btn-join" onclick="showModal()">JOIN</button>
+        </div>
+
+        <nav class="nav-bar">
+            <div class="nav-item active">🏠<br>Home</div>
+            <div class="nav-item">⚔️<br>Matches</div>
+            <div class="nav-item">📋<br>History</div>
+            <div class="nav-item">👤<br>Profile</div>
+        </nav>
+    </div>
+
+    <div id="payModal" class="modal">
+        <div class="modal-content">
+            <h2 style="font-family: 'Oswald'; color: var(--accent); margin-bottom: 10px;">DEPOSIT FUNDS</h2>
+            <p style="color: var(--muted); font-size: 14px; margin-bottom: 20px;">Easypaisa / JazzCash karke WhatsApp par screenshot bhein.</p>
+            
+            <div style="background: #000; padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px;">
+                <div style="color: var(--green); font-size: 12px; font-weight: bold;">ACCOUNT DETAILS</div>
+                <div style="font-size: 22px; font-family: 'Oswald'; color: #fff; margin: 5px 0;">0300-1234567</div>
+                <div style="font-size: 12px; color: var(--muted);">TITLE: RAFAY ALI</div>
+            </div>
+
+            <button class="btn-join" style="width: 100%; margin-bottom: 10px;" onclick="window.open('https://wa.me/923001234567')">SEND ON WHATSAPP</button>
+            <button class="btn-join" style="width: 100%; background: transparent; border: 1px solid var(--border); color: #fff;" onclick="hideModal()">CLOSE</button>
+        </div>
+    </div>
+
+    <script>
+        function showModal() { document.getElementById('payModal').style.display = 'flex'; }
+        function hideModal() { document.getElementById('payModal').style.display = 'none'; }
+    </script>
+
+</body>
+</html>
 
