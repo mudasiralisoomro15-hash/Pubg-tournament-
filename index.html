@@ -1,208 +1,2528 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PUBG ARENA PK</title>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --bg: #0a0c10; --card: #111318; --border: #1e2330;
-            --accent: #f5a623; --text: #e8eaf0; --muted: #6b7280;
-            --green: #00e676; --red: #ff1744;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0a0a0a">
+<title>BATTLEGROUNDS PK // Tournament App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0a;
+  --bg-2: #141414;
+  --bg-3: #1c1c1c;
+  --bg-4: #242424;
+  --orange: #ff5e00;
+  --orange-d: #cc4b00;
+  --amber: #ffb300;
+  --green: #a8d33f;
+  --green-d: #6b8e23;
+  --red: #ff3838;
+  --blue: #3aa6ff;
+  --text: #ededed;
+  --text-dim: #9a9a9a;
+  --text-muted: #5a5a5a;
+  --line: #262626;
+  --line-bright: #3a3a3a;
+}
 
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif; display: flex; justify-content: center; }
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        .app-container { width: 100%; max-width: 480px; min-height: 100vh; position: relative; padding-bottom: 80px; }
+html, body {
+  background: #000;
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  height: 100%;
+  overflow: hidden;
+}
 
-        /* Header */
-        .header { background: var(--card); border-bottom: 1px solid var(--border); padding: 15px; display: flex; justify-content: center; position: sticky; top: 0; z-index: 100; }
-        .logo { font-family: 'Oswald'; color: var(--accent); font-size: 22px; cursor: pointer; }
+button { font-family: inherit; cursor: pointer; border: none; }
+input, select, textarea { font-family: inherit; }
 
-        /* Loading Overlay */
-        #loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg);
-            display: none; justify-content: center; align-items: center; z-index: 9999;
-        }
-        .spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.app-shell {
+  max-width: 480px;
+  margin: 0 auto;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 60px rgba(255,94,0,0.05);
+}
 
-        /* Profile Card & Photo */
-        .view-section { display: none; padding: 10px; }
-        .view-section.active { display: block; }
+.app-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 0;
+}
 
-        .profile-header { position: relative; width: 90px; height: 90px; margin: 0 auto 15px; }
-        .profile-img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--accent); object-fit: cover; }
-        .edit-icon { 
-            position: absolute; bottom: 0; right: 0; background: var(--accent); 
-            color: #000; padding: 5px; border-radius: 50%; font-size: 12px; cursor: pointer; border: 2px solid var(--bg);
-        }
+/* ============ HEADER ============ */
+.app-header {
+  background: rgba(10,10,10,0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+}
 
-        .balance-small { font-size: 18px !important; color: var(--accent); font-family: 'Oswald'; }
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-        /* Detailed Match Cards */
-        .match-card {
-            background: var(--card); border-radius: 12px; border: 1px solid var(--border);
-            margin-bottom: 15px; overflow: hidden;
-        }
-        .match-banner { background: rgba(245, 166, 35, 0.1); padding: 10px 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
-        .match-body { padding: 15px; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; text-align: center; }
-        .stat-box { background: #0a0c10; padding: 8px; border-radius: 8px; border: 1px solid var(--border); }
-        .stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; }
-        .stat-value { font-size: 14px; font-weight: bold; color: #fff; }
+.brand-mark {
+  width: 32px;
+  height: 32px;
+  background: var(--orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: #000;
+  clip-path: polygon(20% 0, 100% 0, 80% 100%, 0 100%);
+}
 
-        /* Admin Secret Modal */
-        .admin-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg);
-            z-index: 5000; display: none; flex-direction: column; padding: 20px;
-        }
+.brand-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 2px;
+}
 
-        /* Nav */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: var(--card); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid var(--border); }
-        .nav-item { color: var(--muted); font-size: 11px; text-align: center; cursor: pointer; }
-        .nav-item.active { color: var(--accent); }
+.brand-text span { color: var(--orange); }
 
-        .btn { background: var(--accent); color: #000; border: none; padding: 12px; border-radius: 8px; font-family: 'Oswald'; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
-    </style>
+.balance-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-3);
+  border: 1px solid var(--line-bright);
+  padding: 6px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--green);
+}
+
+.balance-pill svg { width: 14px; height: 14px; }
+
+.admin-badge {
+  background: var(--red);
+  color: #fff;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+/* ============ MAIN CONTENT ============ */
+.app-main {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  z-index: 1;
+  padding-bottom: 80px;
+}
+
+.app-main::-webkit-scrollbar { width: 4px; }
+.app-main::-webkit-scrollbar-track { background: transparent; }
+.app-main::-webkit-scrollbar-thumb { background: var(--line-bright); }
+
+.screen { display: none; padding: 18px; animation: fadeIn 0.3s; }
+.screen.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============ DASHBOARD ============ */
+.greeting {
+  margin-bottom: 18px;
+}
+
+.greeting-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--orange);
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+
+.greeting-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 1.5px;
+  line-height: 1;
+}
+
+.greeting-name span { color: var(--orange); }
+
+.balance-card {
+  background: linear-gradient(135deg, rgba(255,94,0,0.15), rgba(255,179,0,0.05) 70%), var(--bg-2);
+  border: 1px solid var(--orange);
+  padding: 22px;
+  margin-bottom: 18px;
+  position: relative;
+  overflow: hidden;
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+}
+
+.balance-card::before {
+  content: 'PKR';
+  position: absolute;
+  right: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 130px;
+  color: rgba(255,94,0,0.05);
+  letter-spacing: -4px;
+}
+
+.bc-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.bc-amount {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 48px;
+  letter-spacing: 1px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.bc-amount .currency {
+  font-size: 22px;
+  color: var(--orange);
+  margin-right: 4px;
+}
+
+.bc-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.bc-btn {
+  background: var(--bg-3);
+  border: 1px solid var(--line-bright);
+  color: var(--text);
+  padding: 12px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.bc-btn:hover, .bc-btn:active { border-color: var(--orange); color: var(--orange); }
+.bc-btn.deposit { background: var(--orange); color: #000; border-color: var(--orange); }
+.bc-btn.deposit:hover, .bc-btn.deposit:active { background: var(--amber); border-color: var(--amber); color: #000; }
+
+.quick-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.qs-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  padding: 14px 10px;
+  text-align: center;
+}
+
+.qs-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px;
+  color: var(--orange);
+  line-height: 1;
+}
+
+.qs-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 1.5px;
+  margin-top: 6px;
+}
+
+.section-head-mini {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.section-head-mini h3 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 2px;
+}
+
+.section-head-mini a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--orange);
+  letter-spacing: 1.5px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* ============ MATCH CARDS ============ */
+.match-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: all 0.2s;
+  position: relative;
+  cursor: pointer;
+}
+
+.match-card:hover, .match-card:active { border-color: var(--orange); }
+
+.match-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.match-status {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  padding: 3px 8px;
+  display: inline-block;
+}
+
+.s-open { background: rgba(168,211,63,0.1); color: var(--green); border: 1px solid var(--green); }
+.s-soon { background: rgba(255,179,0,0.1); color: var(--amber); border: 1px solid var(--amber); }
+.s-live { background: rgba(255,56,56,0.15); color: var(--red); border: 1px solid var(--red); animation: blink 1.5s infinite; }
+.s-done { background: rgba(154,154,154,0.1); color: var(--text-dim); border: 1px solid var(--text-muted); }
+.s-full { background: rgba(255,56,56,0.1); color: var(--red); border: 1px solid var(--red); }
+
+@keyframes blink { 50% { opacity: 0.5; } }
+
+.match-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.match-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  letter-spacing: 1.5px;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.match-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 12px;
+  padding: 10px 0;
+  border-top: 1px dashed var(--line-bright);
+  border-bottom: 1px dashed var(--line-bright);
+}
+
+.mi-item {
+  text-align: center;
+}
+
+.mi-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.mi-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.mi-val.prize { color: var(--orange); }
+.mi-val.kill { color: var(--green); }
+
+.match-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.match-time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--amber);
+}
+
+.match-time svg { width: 12px; height: 12px; }
+
+.match-slots {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+.match-slots span { color: var(--orange); font-weight: 700; }
+
+.join-btn {
+  background: var(--orange);
+  color: #000;
+  padding: 8px 18px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+  letter-spacing: 2px;
+  clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
+  transition: all 0.2s;
+}
+
+.join-btn:hover { background: var(--amber); }
+.join-btn:disabled { background: var(--line-bright); color: var(--text-muted); cursor: not-allowed; }
+
+/* ============ HISTORY ============ */
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin-bottom: 18px;
+  border: 1px solid var(--line-bright);
+}
+
+.tab {
+  background: var(--bg-2);
+  color: var(--text-dim);
+  padding: 12px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+  letter-spacing: 2px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab.active { background: var(--orange); color: #000; }
+
+.history-item {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  padding: 14px;
+  margin-bottom: 10px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.hi-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.hi-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+.hi-amount {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 1px;
+  text-align: right;
+}
+
+.hi-amount.plus { color: var(--green); }
+.hi-amount.minus { color: var(--red); }
+
+.hi-status {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  padding: 2px 6px;
+  margin-top: 4px;
+  display: inline-block;
+}
+.hi-status.pending { background: rgba(255,179,0,0.1); color: var(--amber); border: 1px solid var(--amber); }
+.hi-status.approved { background: rgba(168,211,63,0.1); color: var(--green); border: 1px solid var(--green); }
+.hi-status.rejected { background: rgba(255,56,56,0.1); color: var(--red); border: 1px solid var(--red); }
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+}
+
+.empty-state svg {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  opacity: 0.4;
+}
+
+.empty-state-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+/* ============ PROFILE ============ */
+.profile-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line-bright);
+  padding: 20px;
+  margin-bottom: 14px;
+  text-align: center;
+  position: relative;
+}
+
+.profile-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 60px; height: 3px;
+  background: var(--orange);
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 14px;
+  background: linear-gradient(135deg, var(--orange), var(--amber));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px;
+  color: #000;
+  letter-spacing: 2px;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+.profile-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+
+.profile-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--orange);
+  letter-spacing: 1.5px;
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.ps-item { text-align: center; border-right: 1px solid var(--line); }
+.ps-item:last-child { border-right: none; }
+
+.ps-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  color: var(--orange);
+  line-height: 1;
+}
+
+.ps-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 1.5px;
+  margin-top: 4px;
+}
+
+.info-list {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  margin-bottom: 14px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.info-row:last-child { border-bottom: none; }
+
+.info-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 1.5px;
+}
+
+.info-value {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.action-list {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+}
+
+.action-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.action-row:last-child { border-bottom: none; }
+.action-row:hover { background: var(--bg-3); }
+
+.action-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--bg-3);
+  border: 1px solid var(--line-bright);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--orange);
+  flex-shrink: 0;
+}
+
+.action-icon svg { width: 16px; height: 16px; }
+
+.action-text {
+  flex: 1;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  letter-spacing: 1.5px;
+}
+
+.action-arrow { color: var(--text-muted); }
+
+/* ============ BOTTOM NAV ============ */
+.bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(10,10,10,0.95);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--line-bright);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  z-index: 10;
+}
+
+.bn-item {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 12px 0 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.bn-item.active { color: var(--orange); }
+
+.bn-item.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 30%;
+  right: 30%;
+  height: 2px;
+  background: var(--orange);
+}
+
+.bn-item svg { width: 20px; height: 20px; }
+
+.bn-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+}
+
+/* ============ MODAL ============ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fadeIn 0.2s;
+}
+
+.modal-overlay.active { display: flex; }
+
+.modal {
+  background: var(--bg-2);
+  border-top: 2px solid var(--orange);
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px 20px;
+  animation: slideUp 0.3s;
+  position: relative;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  background: var(--bg-3);
+  border: 1px solid var(--line-bright);
+  color: var(--text-dim);
+  font-size: 18px;
+}
+
+.modal-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--orange);
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+
+.modal-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 2px;
+  line-height: 1;
+  margin-bottom: 18px;
+}
+
+.field {
+  margin-bottom: 14px;
+}
+
+.field label {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 1.5px;
+  margin-bottom: 6px;
+}
+
+.field input, .field select, .field textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--line-bright);
+  padding: 12px 14px;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 500;
+  transition: border-color 0.2s;
+}
+
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none;
+  border-color: var(--orange);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.method-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.method-card {
+  background: var(--bg);
+  border: 1px solid var(--line-bright);
+  padding: 12px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.method-card.selected {
+  border-color: var(--orange);
+  background: rgba(255,94,0,0.08);
+}
+
+.method-card .mc-icon {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  color: var(--orange);
+  margin-bottom: 4px;
+  letter-spacing: 1px;
+}
+
+.method-card .mc-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
+.modal-info-box {
+  background: rgba(255,179,0,0.05);
+  border: 1px solid var(--amber);
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--amber);
+  line-height: 1.5;
+  letter-spacing: 0.5px;
+}
+
+.submit-btn {
+  width: 100%;
+  background: var(--orange);
+  color: #000;
+  padding: 14px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 2px;
+  margin-top: 6px;
+  transition: all 0.2s;
+}
+
+.submit-btn:hover { background: var(--amber); }
+.submit-btn:disabled { background: var(--line-bright); color: var(--text-muted); }
+
+.btn-secondary {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--line-bright);
+  color: var(--text-dim);
+  padding: 12px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+  letter-spacing: 2px;
+  margin-top: 8px;
+}
+
+/* match detail modal extras */
+.detail-prize {
+  background: linear-gradient(135deg, rgba(255,94,0,0.15), transparent);
+  border: 1px solid var(--orange);
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.detail-prize-amt {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 40px;
+  color: var(--orange);
+  line-height: 1;
+}
+
+.detail-prize-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  margin-top: 6px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.detail-grid .info-row {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  padding: 10px 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.detail-grid .info-label { font-size: 9px; }
+.detail-grid .info-value { font-size: 14px; font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px; }
+
+/* ============ TOAST ============ */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  width: 90%;
+  max-width: 400px;
+  pointer-events: none;
+}
+
+.toast {
+  background: var(--bg-2);
+  border-left: 3px solid var(--orange);
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  animation: toastSlide 0.3s, toastOut 0.3s 2.7s forwards;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toast.success { border-color: var(--green); }
+.toast.error { border-color: var(--red); }
+.toast.info { border-color: var(--blue); }
+
+.toast-icon { font-family: 'Bebas Neue', sans-serif; font-size: 16px; }
+.toast.success .toast-icon { color: var(--green); }
+.toast.error .toast-icon { color: var(--red); }
+.toast.info .toast-icon { color: var(--blue); }
+
+@keyframes toastSlide { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes toastOut { to { transform: translateY(-30px); opacity: 0; } }
+
+/* ============ ADMIN STYLES ============ */
+.admin-mode .app-header { border-bottom-color: var(--red); }
+.admin-mode .brand-mark { background: var(--red); }
+.admin-mode .brand-text span { color: var(--red); }
+
+.admin-tag {
+  background: var(--red);
+  color: #fff;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  padding: 4px 10px;
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.admin-stat-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  padding: 14px;
+  position: relative;
+}
+
+.admin-stat-card.alert { border-color: var(--amber); background: rgba(255,179,0,0.04); }
+.admin-stat-card.urgent { border-color: var(--red); background: rgba(255,56,56,0.04); }
+
+.asc-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px;
+  line-height: 1;
+  color: var(--text);
+}
+
+.admin-stat-card.alert .asc-num { color: var(--amber); }
+.admin-stat-card.urgent .asc-num { color: var(--red); }
+
+.asc-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 1.5px;
+  margin-top: 6px;
+}
+
+.request-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  padding: 14px;
+  margin-bottom: 10px;
+}
+
+.req-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.req-user {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 1px;
+}
+
+.req-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.req-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+.req-amount {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  color: var(--orange);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.req-detail {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.req-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.btn-approve {
+  background: var(--green);
+  color: #000;
+  padding: 10px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+  letter-spacing: 2px;
+}
+
+.btn-reject {
+  background: var(--bg-3);
+  border: 1px solid var(--red);
+  color: var(--red);
+  padding: 10px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+  letter-spacing: 2px;
+}
+
+.fab {
+  position: absolute;
+  bottom: 90px;
+  right: 16px;
+  width: 52px;
+  height: 52px;
+  background: var(--orange);
+  color: #000;
+  font-size: 26px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+  z-index: 5;
+  box-shadow: 0 6px 20px rgba(255,94,0,0.4);
+  clip-path: polygon(15% 0, 100% 0, 85% 100%, 0 100%);
+}
+
+.user-row {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.user-row .avatar { width: 36px; height: 36px; font-size: 16px; margin: 0; }
+
+.ur-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+.ur-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.ur-balance {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  color: var(--green);
+  text-align: right;
+}
+
+/* admin matches list */
+.adm-match-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  padding: 14px;
+  margin-bottom: 10px;
+}
+
+.amc-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.amc-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.btn-edit, .btn-delete {
+  flex: 1;
+  padding: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+}
+
+.btn-edit { background: var(--bg-3); border: 1px solid var(--blue); color: var(--blue); }
+.btn-delete { background: var(--bg-3); border: 1px solid var(--red); color: var(--red); }
+
+/* small responsive tweaks */
+@media (max-width: 360px) {
+  .quick-stats { gap: 6px; }
+  .qs-num { font-size: 22px; }
+  .match-info-grid { gap: 4px; }
+  .mi-val { font-size: 16px; }
+}
+</style>
 </head>
 <body>
 
-    <div id="loader"><div class="spinner"></div></div>
+<!-- Toast container -->
+<div class="toast-container" id="toasts"></div>
 
-    <div class="app-container">
-        <header class="header">
-            <div class="logo" onclick="openAdmin()">🎯 PUBG ARENA PK</div>
-        </header>
+<!-- ===== APP SHELL ===== -->
+<div class="app-shell" id="app">
 
-        <div id="home" class="view-section active">
-            <div style="background: var(--card); padding: 15px; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <img src="https://i.pravatar.cc/100?u=rafay" class="profile-img" style="width:45px; height:45px;">
-                    <div>
-                        <div style="font-size: 14px; font-weight: bold;">Rafay_Ali_PK</div>
-                        <div class="balance-small">Rs. 2,300</div>
-                    </div>
-                </div>
-                <button onclick="switchTab('profile')" style="background: var(--accent); border:none; padding: 5px 12px; border-radius: 5px; font-size: 12px; font-weight: bold;">WALLET</button>
-            </div>
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-mark" id="brandMark">B</div>
+      <div class="brand-text" id="brandText">BATTLE<span>GROUNDS</span></div>
+    </div>
+    <div class="balance-pill" id="balancePill">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.18L19.82 8 12 11.82 4.18 8 12 4.18zM4 9.18l7 3.5v7.64l-7-3.5V9.18zm9 11.14v-7.64l7-3.5v7.64l-7 3.5z"/></svg>
+      <span id="balanceText">PKR 500</span>
+    </div>
+  </header>
 
-            <h3 style="margin-bottom: 15px; font-family: 'Oswald';">🔥 LIVE TOURNAMENTS</h3>
-            
-            <div class="match-card">
-                <div class="match-banner">
-                    <span style="font-weight: bold;">SQUAD | ERANGEL</span>
-                    <span style="color: var(--accent);">ID: #9942</span>
-                </div>
-                <div class="match-body">
-                    <div style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">Erangel Mega Tournament</div>
-                    <div style="font-size: 12px; color: var(--muted);">⏰ Start: 01:00 PM | 📅 Today</div>
-                    
-                    <div class="stats-grid">
-                        <div class="stat-box">
-                            <div class="stat-label">Winning</div>
-                            <div class="stat-value">Rs. 1000</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-label">Per Kill</div>
-                            <div class="stat-value">Rs. 70</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-label">Entry</div>
-                            <div class="stat-value">Rs. 150</div>
-                        </div>
-                    </div>
-                    <button class="btn" onclick="alert('Joining Match...')">JOIN MATCH</button>
-                </div>
-            </div>
+  <!-- MAIN -->
+  <main class="app-main" id="appMain">
+
+    <!-- ====== USER: DASHBOARD ====== -->
+    <section class="screen active" data-screen="dashboard">
+      <div class="greeting">
+        <div class="greeting-tag">// WELCOME BACK, SOLDIER</div>
+        <h1 class="greeting-name" id="greetName">HELLO, <span>PLAYER</span></h1>
+      </div>
+
+      <div class="balance-card">
+        <div class="bc-label">// AVAILABLE BALANCE</div>
+        <div class="bc-amount"><span class="currency">PKR</span><span id="dashBalance">500</span></div>
+        <div class="bc-actions">
+          <button class="bc-btn deposit" onclick="openModal('deposit')">＋ DEPOSIT</button>
+          <button class="bc-btn" onclick="openModal('withdraw')">↗ WITHDRAW</button>
         </div>
+      </div>
 
-        <div id="profile" class="view-section">
-            <div style="text-align: center; margin-top: 20px;">
-                <div class="profile-header">
-                    <img id="user-pic" src="https://i.pravatar.cc/150?u=rafay" class="profile-img">
-                    <label for="img-upload" class="edit-icon">📷</label>
-                    <input type="file" id="img-upload" style="display:none" onchange="previewImg(event)">
-                </div>
-                <h2 style="font-family: 'Oswald';">Rafay_Ali_PK</h2>
-                <p style="color: var(--muted); font-size: 12px;">UID: 5849-PK-2024</p>
+      <div class="quick-stats">
+        <div class="qs-card"><div class="qs-num" id="statMatches">0</div><div class="qs-label">MATCHES</div></div>
+        <div class="qs-card"><div class="qs-num" id="statKills">0</div><div class="qs-label">KILLS</div></div>
+        <div class="qs-card"><div class="qs-num" id="statWins">0</div><div class="qs-label">WINS</div></div>
+      </div>
 
-                <div style="background: var(--card); margin: 20px 0; padding: 20px; border-radius: 15px; border: 1px solid var(--border);">
-                    <div style="font-size: 12px; color: var(--muted); margin-bottom: 5px;">TOTAL BALANCE</div>
-                    <div style="font-size: 32px; font-family: 'Oswald'; color: var(--accent);">Rs. 2,300</div>
-                    
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn" style="background: var(--green);" onclick="alert('EasyPaisa: 03123456789 par bhein')">DEPOSIT</button>
-                        <button class="btn" style="background: var(--red); color: #fff;" onclick="alert('Withdraw Request Sent')">WITHDRAW</button>
-                    </div>
-                </div>
-            </div>
+      <div class="section-head-mini">
+        <h3>UPCOMING MATCHES</h3>
+        <a onclick="navTo('matches')">VIEW ALL →</a>
+      </div>
+      <div id="dashMatches"></div>
+    </section>
+
+    <!-- ====== USER: MATCHES ====== -->
+    <section class="screen" data-screen="matches">
+      <div class="greeting">
+        <div class="greeting-tag">// AVAILABLE BATTLES</div>
+        <h1 class="greeting-name">ALL <span>MATCHES</span></h1>
+      </div>
+      <div id="allMatches"></div>
+    </section>
+
+    <!-- ====== USER: HISTORY ====== -->
+    <section class="screen" data-screen="history">
+      <div class="greeting">
+        <div class="greeting-tag">// YOUR ACTIVITY</div>
+        <h1 class="greeting-name">HISTORY <span>LOG</span></h1>
+      </div>
+      <div class="tabs">
+        <div class="tab active" data-tab="matches" onclick="switchTab('matches')">MATCHES</div>
+        <div class="tab" data-tab="transactions" onclick="switchTab('transactions')">TRANSACTIONS</div>
+      </div>
+      <div id="historyMatches"></div>
+      <div id="historyTransactions" style="display:none;"></div>
+    </section>
+
+    <!-- ====== USER: PROFILE ====== -->
+    <section class="screen" data-screen="profile">
+      <div class="profile-card">
+        <div class="avatar" id="profAvatar">P1</div>
+        <div class="profile-name" id="profName">PLAYER ONE</div>
+        <div class="profile-id" id="profId">PMW001 // GHOST_GAMER</div>
+        <div class="profile-stats">
+          <div class="ps-item"><div class="ps-num" id="psMatches">0</div><div class="ps-label">PLAYED</div></div>
+          <div class="ps-item"><div class="ps-num" id="psKills">0</div><div class="ps-label">KILLS</div></div>
+          <div class="ps-item"><div class="ps-num" id="psEarn">0</div><div class="ps-label">EARNED</div></div>
         </div>
+      </div>
 
-        <div id="admin-panel" class="admin-modal">
-            <h2 style="color: var(--red); font-family: 'Oswald'; margin-bottom: 20px;">🔐 ADMIN CONTROL</h2>
-            <div style="background: var(--card); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
-                <p>Pending Deposits: 2</p>
-                <button class="btn" style="background: var(--green);" onclick="alert('Deposit Approved')">APPROVE ALL</button>
-            </div>
-            <button class="btn" style="margin-top: auto; background: var(--muted);" onclick="closeAdmin()">CLOSE ADMIN</button>
+      <div class="info-list">
+        <div class="info-row"><span class="info-label">PUBG ID</span><span class="info-value" id="infoPubgId">5234567890</span></div>
+        <div class="info-row"><span class="info-label">IGN</span><span class="info-value" id="infoIgn">GHOST_GAMER</span></div>
+        <div class="info-row"><span class="info-label">PHONE</span><span class="info-value" id="infoPhone">+92 3XX XXXXXXX</span></div>
+        <div class="info-row"><span class="info-label">CITY</span><span class="info-value" id="infoCity">Mirpur Khas</span></div>
+      </div>
+
+      <div class="action-list">
+        <div class="action-row" onclick="openModal('editProfile')">
+          <div class="action-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></div>
+          <div class="action-text">EDIT PROFILE</div>
+          <div class="action-arrow">›</div>
         </div>
+        <div class="action-row" onclick="openModal('deposit')">
+          <div class="action-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2v20M2 12h20" stroke="currentColor" stroke-width="2"/></svg></div>
+          <div class="action-text">ADD MONEY</div>
+          <div class="action-arrow">›</div>
+        </div>
+        <div class="action-row" onclick="openModal('withdraw')">
+          <div class="action-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="2" fill="none"/></svg></div>
+          <div class="action-text">WITHDRAW MONEY</div>
+          <div class="action-arrow">›</div>
+        </div>
+        <div class="action-row" onclick="openModal('adminLogin')">
+          <div class="action-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg></div>
+          <div class="action-text">ADMIN PANEL</div>
+          <div class="action-arrow">›</div>
+        </div>
+        <div class="action-row" onclick="resetData()">
+          <div class="action-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></div>
+          <div class="action-text">RESET ALL DATA</div>
+          <div class="action-arrow">›</div>
+        </div>
+      </div>
+    </section>
 
-        <nav class="nav-bar">
-            <div class="nav-item active" onclick="switchTab('home')">🏠<br>Home</div>
-            <div class="nav-item" onclick="switchTab('matches')">⚔️<br>Matches</div>
-            <div class="nav-item" onclick="switchTab('history')">📋<br>History</div>
-            <div class="nav-item" onclick="switchTab('profile')">👤<br>Profile</div>
-        </nav>
+    <!-- ====== ADMIN: DASHBOARD ====== -->
+    <section class="screen" data-screen="adm-dash">
+      <div class="greeting">
+        <div class="greeting-tag" style="color: var(--red);">// ADMIN CONTROL CENTER</div>
+        <h1 class="greeting-name">COMMAND <span style="color: var(--red);">PANEL</span></h1>
+      </div>
+
+      <div class="admin-stats">
+        <div class="admin-stat-card urgent">
+          <div class="asc-num" id="admPendDep">0</div>
+          <div class="asc-label">PENDING DEPOSITS</div>
+        </div>
+        <div class="admin-stat-card alert">
+          <div class="asc-num" id="admPendWit">0</div>
+          <div class="asc-label">PENDING WITHDRAWS</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="asc-num" id="admTotalMatch">0</div>
+          <div class="asc-label">TOTAL MATCHES</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="asc-num" id="admTotalUsers">1</div>
+          <div class="asc-label">TOTAL USERS</div>
+        </div>
+      </div>
+
+      <div class="section-head-mini">
+        <h3>QUICK ACTIONS</h3>
+      </div>
+
+      <div class="action-list">
+        <div class="action-row" onclick="navTo('adm-deposits')">
+          <div class="action-icon" style="color: var(--green);"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></div>
+          <div class="action-text">DEPOSIT REQUESTS</div>
+          <div class="action-arrow">›</div>
+        </div>
+        <div class="action-row" onclick="navTo('adm-withdraws')">
+          <div class="action-icon" style="color: var(--amber);"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm0-4h-2V7h2v8z"/></svg></div>
+          <div class="action-text">WITHDRAW REQUESTS</div>
+          <div class="action-arrow">›</div>
+        </div>
+        <div class="action-row" onclick="navTo('adm-matches')">
+          <div class="action-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14.5 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V7.5L14.5 2zM6 20V4h7v5h5v11H6z"/></svg></div>
+          <div class="action-text">MANAGE MATCHES</div>
+          <div class="action-arrow">›</div>
+        </div>
+        <div class="action-row" onclick="navTo('adm-users')">
+          <div class="action-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>
+          <div class="action-text">MANAGE USERS</div>
+          <div class="action-arrow">›</div>
+        </div>
+        <div class="action-row" onclick="exitAdmin()">
+          <div class="action-icon" style="color: var(--red);"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg></div>
+          <div class="action-text">EXIT ADMIN</div>
+          <div class="action-arrow">›</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== ADMIN: DEPOSIT REQUESTS ====== -->
+    <section class="screen" data-screen="adm-deposits">
+      <div class="greeting">
+        <div class="greeting-tag" style="color: var(--red);">// ADMIN</div>
+        <h1 class="greeting-name">DEPOSIT <span style="color: var(--green);">REQUESTS</span></h1>
+      </div>
+      <div id="admDepList"></div>
+    </section>
+
+    <!-- ====== ADMIN: WITHDRAW REQUESTS ====== -->
+    <section class="screen" data-screen="adm-withdraws">
+      <div class="greeting">
+        <div class="greeting-tag" style="color: var(--red);">// ADMIN</div>
+        <h1 class="greeting-name">WITHDRAW <span style="color: var(--amber);">REQUESTS</span></h1>
+      </div>
+      <div id="admWitList"></div>
+    </section>
+
+    <!-- ====== ADMIN: MATCHES ====== -->
+    <section class="screen" data-screen="adm-matches">
+      <div class="greeting">
+        <div class="greeting-tag" style="color: var(--red);">// ADMIN</div>
+        <h1 class="greeting-name">MANAGE <span>MATCHES</span></h1>
+      </div>
+      <div id="admMatchList"></div>
+      <button class="fab" onclick="openModal('addMatch')">＋</button>
+    </section>
+
+    <!-- ====== ADMIN: USERS ====== -->
+    <section class="screen" data-screen="adm-users">
+      <div class="greeting">
+        <div class="greeting-tag" style="color: var(--red);">// ADMIN</div>
+        <h1 class="greeting-name">REGISTERED <span>USERS</span></h1>
+      </div>
+      <div id="admUserList"></div>
+    </section>
+
+  </main>
+
+  <!-- BOTTOM NAV (USER) -->
+  <nav class="bottom-nav" id="userNav">
+    <button class="bn-item active" data-nav="dashboard" onclick="navTo('dashboard')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+      <span class="bn-label">HOME</span>
+    </button>
+    <button class="bn-item" data-nav="matches" onclick="navTo('matches')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.5 9.5h2v5h-2zm9 0h2v5h-2zm-4.5-3h2v11h-2zM4 4l16 0v2H4zm0 14h16v2H4z"/></svg>
+      <span class="bn-label">MATCHES</span>
+    </button>
+    <button class="bn-item" data-nav="history" onclick="navTo('history')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+      <span class="bn-label">HISTORY</span>
+    </button>
+    <button class="bn-item" data-nav="profile" onclick="navTo('profile')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      <span class="bn-label">PROFILE</span>
+    </button>
+  </nav>
+
+  <!-- BOTTOM NAV (ADMIN) -->
+  <nav class="bottom-nav" id="adminNav" style="display:none;">
+    <button class="bn-item active" data-nav="adm-dash" onclick="navTo('adm-dash')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+      <span class="bn-label">DASH</span>
+    </button>
+    <button class="bn-item" data-nav="adm-deposits" onclick="navTo('adm-deposits')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/></svg>
+      <span class="bn-label">DEPOSITS</span>
+    </button>
+    <button class="bn-item" data-nav="adm-withdraws" onclick="navTo('adm-withdraws')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+      <span class="bn-label">WITHDRAW</span>
+    </button>
+    <button class="bn-item" data-nav="adm-matches" onclick="navTo('adm-matches')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14.5 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V7.5L14.5 2z"/></svg>
+      <span class="bn-label">MATCHES</span>
+    </button>
+  </nav>
+
+</div>
+
+<!-- ============ MODALS ============ -->
+
+<!-- Deposit Modal -->
+<div class="modal-overlay" id="modalDeposit">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('deposit')">✕</button>
+    <div class="modal-tag">// FUND TRANSFER</div>
+    <div class="modal-title">DEPOSIT FUNDS</div>
+
+    <div class="modal-info-box" id="depositInfo">
+      ⚠ Send the amount to the selected account, then submit the transaction ID. Admin will approve within 30 minutes.
     </div>
 
-    <script>
-        function switchTab(tabId) {
-            // Show Loader
-            document.getElementById('loader').style.display = 'flex';
-            
-            setTimeout(() => {
-                document.getElementById('loader').style.display = 'none';
-                
-                // Switch Tabs
-                document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                
-                if(document.getElementById(tabId)) {
-                    document.getElementById(tabId).classList.add('active');
-                }
-                
-                // Highlight Nav
-                const navs = document.querySelectorAll('.nav-item');
-                if(tabId === 'home') navs[0].classList.add('active');
-                if(tabId === 'profile') navs[3].classList.add('active');
-            }, 800); // 0.8 second loading
-        }
+    <div class="field">
+      <label>SELECT METHOD</label>
+      <div class="method-grid">
+        <div class="method-card selected" data-method="EasyPaisa" onclick="selectMethod(this)">
+          <div class="mc-icon">EP</div>
+          <div class="mc-label">EASYPAISA</div>
+        </div>
+        <div class="method-card" data-method="JazzCash" onclick="selectMethod(this)">
+          <div class="mc-icon">JC</div>
+          <div class="mc-label">JAZZCASH</div>
+        </div>
+        <div class="method-card" data-method="Bank" onclick="selectMethod(this)">
+          <div class="mc-icon">BNK</div>
+          <div class="mc-label">BANK</div>
+        </div>
+      </div>
+    </div>
 
-        function previewImg(event) {
-            const reader = new FileReader();
-            reader.onload = function() {
-                document.getElementById('user-pic').src = reader.result;
-            }
-            reader.readAsDataURL(event.target.files[0]);
-        }
+    <div class="modal-info-box" style="background: rgba(168,211,63,0.05); border-color: var(--green); color: var(--green);" id="depositAccount">
+      ACCOUNT: 0345-1234567 (BATTLEGROUNDS PK)
+    </div>
 
-        function openAdmin() {
-            let pass = prompt("Enter Admin Password:");
-            if(pass === "rafay786") {
-                document.getElementById('admin-panel').style.display = 'flex';
-            } else {
-                alert("Access Denied!");
-            }
-        }
+    <div class="field">
+      <label>AMOUNT (PKR)</label>
+      <input type="number" id="depAmount" placeholder="Min 100" min="100">
+    </div>
+    <div class="field">
+      <label>TRANSACTION ID</label>
+      <input type="text" id="depTxn" placeholder="e.g. TXN12345678">
+    </div>
+    <div class="field">
+      <label>SENDER NAME</label>
+      <input type="text" id="depSender" placeholder="Account holder name">
+    </div>
+    <button class="submit-btn" onclick="submitDeposit()">SUBMIT REQUEST ▸</button>
+  </div>
+</div>
 
-        function closeAdmin() {
-            document.getElementById('admin-panel').style.display = 'none';
-        }
-    </script>
+<!-- Withdraw Modal -->
+<div class="modal-overlay" id="modalWithdraw">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('withdraw')">✕</button>
+    <div class="modal-tag">// CASH OUT</div>
+    <div class="modal-title">WITHDRAW FUNDS</div>
+
+    <div class="modal-info-box">
+      Available: <strong id="withAvail">PKR 500</strong> • Min: PKR 200 • Processing: 24 hours
+    </div>
+
+    <div class="field">
+      <label>WITHDRAW METHOD</label>
+      <div class="method-grid">
+        <div class="method-card selected" data-wmethod="EasyPaisa" onclick="selectWMethod(this)">
+          <div class="mc-icon">EP</div>
+          <div class="mc-label">EASYPAISA</div>
+        </div>
+        <div class="method-card" data-wmethod="JazzCash" onclick="selectWMethod(this)">
+          <div class="mc-icon">JC</div>
+          <div class="mc-label">JAZZCASH</div>
+        </div>
+        <div class="method-card" data-wmethod="Bank" onclick="selectWMethod(this)">
+          <div class="mc-icon">BNK</div>
+          <div class="mc-label">BANK</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>AMOUNT (PKR)</label>
+      <input type="number" id="witAmount" placeholder="Min 200" min="200">
+    </div>
+    <div class="field">
+      <label>ACCOUNT NUMBER</label>
+      <input type="text" id="witAccount" placeholder="03XX-XXXXXXX or IBAN">
+    </div>
+    <div class="field">
+      <label>ACCOUNT HOLDER NAME</label>
+      <input type="text" id="witName" placeholder="Full name as on account">
+    </div>
+    <button class="submit-btn" onclick="submitWithdraw()">SUBMIT REQUEST ▸</button>
+  </div>
+</div>
+
+<!-- Match Detail Modal -->
+<div class="modal-overlay" id="modalMatch">
+  <div class="modal" id="matchModalContent"></div>
+</div>
+
+<!-- Admin Login Modal -->
+<div class="modal-overlay" id="modalAdminLogin">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('adminLogin')">✕</button>
+    <div class="modal-tag" style="color: var(--red);">// RESTRICTED ACCESS</div>
+    <div class="modal-title">ADMIN LOGIN</div>
+    <div class="modal-info-box">
+      Default password: <strong>admin123</strong> (change this in production)
+    </div>
+    <div class="field">
+      <label>PASSWORD</label>
+      <input type="password" id="admPass" placeholder="Enter admin password">
+    </div>
+    <button class="submit-btn" style="background: var(--red); color: #fff;" onclick="adminLogin()">UNLOCK PANEL ▸</button>
+  </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal-overlay" id="modalEditProfile">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('editProfile')">✕</button>
+    <div class="modal-tag">// PERSONAL DATA</div>
+    <div class="modal-title">EDIT PROFILE</div>
+    <div class="field">
+      <label>FULL NAME</label>
+      <input type="text" id="edName">
+    </div>
+    <div class="field">
+      <label>IGN (IN-GAME NAME)</label>
+      <input type="text" id="edIgn">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>PUBG ID</label>
+        <input type="text" id="edPubg">
+      </div>
+      <div class="field">
+        <label>CITY</label>
+        <input type="text" id="edCity">
+      </div>
+    </div>
+    <div class="field">
+      <label>PHONE</label>
+      <input type="tel" id="edPhone">
+    </div>
+    <button class="submit-btn" onclick="saveProfile()">SAVE CHANGES ▸</button>
+  </div>
+</div>
+
+<!-- Add/Edit Match Modal (Admin) -->
+<div class="modal-overlay" id="modalAddMatch">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('addMatch')">✕</button>
+    <div class="modal-tag" style="color: var(--red);">// ADMIN</div>
+    <div class="modal-title" id="matchModalTitle">ADD MATCH</div>
+
+    <div class="field">
+      <label>MATCH NAME</label>
+      <input type="text" id="amName" placeholder="e.g. WEEKLY CLASH">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>FORMAT</label>
+        <select id="amFormat">
+          <option>SQUAD TPP</option>
+          <option>SQUAD FPP</option>
+          <option>DUO TPP</option>
+          <option>SOLO FPP</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>MAP</label>
+        <select id="amMap">
+          <option>ERANGEL</option>
+          <option>MIRAMAR</option>
+          <option>SANHOK</option>
+          <option>VIKENDI</option>
+          <option>LIVIK</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>ENTRY FEE (PKR)</label>
+        <input type="number" id="amEntry" placeholder="150">
+      </div>
+      <div class="field">
+        <label>PER KILL (PKR)</label>
+        <input type="number" id="amKill" placeholder="70">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>WINNING PRIZE</label>
+        <input type="text" id="amPrize" placeholder="1000 UC or 10000">
+      </div>
+      <div class="field">
+        <label>TOTAL SLOTS</label>
+        <input type="number" id="amSlots" placeholder="100">
+      </div>
+    </div>
+    <div class="field">
+      <label>START TIME</label>
+      <input type="datetime-local" id="amTime">
+    </div>
+    <button class="submit-btn" onclick="saveMatch()">SAVE MATCH ▸</button>
+  </div>
+</div>
+
+<script>
+// ===========================================================
+// ============ STATE MANAGEMENT (LOCAL STORAGE) =============
+// ===========================================================
+const STORE_KEY = 'pubg_app_v1';
+
+const defaultState = {
+  user: {
+    id: 'PMW001',
+    name: 'PLAYER ONE',
+    ign: 'GHOST_GAMER',
+    pubg_id: '5234567890',
+    phone: '+92 3XX XXXXXXX',
+    city: 'Mirpur Khas',
+    balance: 500,
+    matchesPlayed: 0,
+    totalKills: 0,
+    totalWins: 0,
+    totalEarned: 0,
+    joinedMatches: []
+  },
+  matches: [
+    {
+      id: 'M001',
+      name: 'WEEKLY CLASH',
+      format: 'SQUAD TPP',
+      map: 'ERANGEL',
+      entry: 150,
+      perKill: 70,
+      prize: '1000 UC',
+      slots: 100,
+      filled: 67,
+      startTime: new Date(Date.now() + 1000*60*60*5).toISOString(),
+      status: 'open'
+    },
+    {
+      id: 'M002',
+      name: 'SOLO KILL RACE',
+      format: 'SOLO FPP',
+      map: 'MIRAMAR',
+      entry: 100,
+      perKill: 50,
+      prize: 'PKR 5000',
+      slots: 100,
+      filled: 42,
+      startTime: new Date(Date.now() + 1000*60*60*8).toISOString(),
+      status: 'open'
+    },
+    {
+      id: 'M003',
+      name: 'DUO SHOWDOWN',
+      format: 'DUO TPP',
+      map: 'SANHOK',
+      entry: 200,
+      perKill: 100,
+      prize: 'PKR 15000',
+      slots: 50,
+      filled: 38,
+      startTime: new Date(Date.now() + 1000*60*60*24).toISOString(),
+      status: 'open'
+    },
+    {
+      id: 'M004',
+      name: 'PRIME TIME BATTLE',
+      format: 'SQUAD TPP',
+      map: 'VIKENDI',
+      entry: 250,
+      perKill: 80,
+      prize: '2000 UC',
+      slots: 80,
+      filled: 12,
+      startTime: new Date(Date.now() + 1000*60*60*48).toISOString(),
+      status: 'soon'
+    }
+  ],
+  depositRequests: [],
+  withdrawRequests: [],
+  transactions: [],
+  matchHistory: [],
+  users: [
+    { id: 'PMW001', name: 'PLAYER ONE', ign: 'GHOST_GAMER', balance: 500 }
+  ]
+};
+
+let state = loadState();
+let editingMatchId = null;
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(defaultState));
+}
+
+function saveState() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+function resetData() {
+  if (!confirm('Sara data delete ho jayega. Continue?')) return;
+  state = JSON.parse(JSON.stringify(defaultState));
+  saveState();
+  renderAll();
+  toast('Data reset complete', 'info');
+  navTo('dashboard');
+}
+
+// ===========================================================
+// =================== TOAST NOTIFICATION ====================
+// ===========================================================
+function toast(msg, type='info') {
+  const c = document.getElementById('toasts');
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ⓘ';
+  t.innerHTML = `<span class="toast-icon">${icon}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 3200);
+}
+
+// ===========================================================
+// ====================== NAVIGATION =========================
+// ===========================================================
+let isAdmin = false;
+
+function navTo(screen) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.querySelector(`[data-screen="${screen}"]`);
+  if (target) target.classList.add('active');
+  
+  document.querySelectorAll('.bn-item').forEach(b => b.classList.remove('active'));
+  const navBtn = document.querySelector(`[data-nav="${screen}"]`);
+  if (navBtn) navBtn.classList.add('active');
+  
+  document.getElementById('appMain').scrollTop = 0;
+  
+  // refresh that screen
+  if (screen === 'dashboard') renderDashboard();
+  if (screen === 'matches') renderMatches();
+  if (screen === 'history') renderHistory();
+  if (screen === 'profile') renderProfile();
+  if (screen === 'adm-dash') renderAdminDash();
+  if (screen === 'adm-deposits') renderAdmDeposits();
+  if (screen === 'adm-withdraws') renderAdmWithdraws();
+  if (screen === 'adm-matches') renderAdmMatches();
+  if (screen === 'adm-users') renderAdmUsers();
+}
+
+// ===========================================================
+// ===================== MODAL HANDLING ======================
+// ===========================================================
+function openModal(name) {
+  if (name === 'deposit') {
+    closeAllModals();
+    document.getElementById('modalDeposit').classList.add('active');
+  } else if (name === 'withdraw') {
+    closeAllModals();
+    document.getElementById('withAvail').textContent = 'PKR ' + state.user.balance;
+    document.getElementById('modalWithdraw').classList.add('active');
+  } else if (name === 'adminLogin') {
+    closeAllModals();
+    document.getElementById('admPass').value = '';
+    document.getElementById('modalAdminLogin').classList.add('active');
+  } else if (name === 'editProfile') {
+    closeAllModals();
+    document.getElementById('edName').value = state.user.name;
+    document.getElementById('edIgn').value = state.user.ign;
+    document.getElementById('edPubg').value = state.user.pubg_id;
+    document.getElementById('edCity').value = state.user.city;
+    document.getElementById('edPhone').value = state.user.phone;
+    document.getElementById('modalEditProfile').classList.add('active');
+  } else if (name === 'addMatch') {
+    closeAllModals();
+    editingMatchId = null;
+    document.getElementById('matchModalTitle').textContent = 'ADD MATCH';
+    ['amName','amEntry','amKill','amPrize','amSlots','amTime'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('modalAddMatch').classList.add('active');
+  }
+}
+
+function closeModal(name) {
+  const map = {
+    deposit: 'modalDeposit',
+    withdraw: 'modalWithdraw',
+    adminLogin: 'modalAdminLogin',
+    editProfile: 'modalEditProfile',
+    addMatch: 'modalAddMatch',
+    match: 'modalMatch'
+  };
+  document.getElementById(map[name]).classList.remove('active');
+}
+
+function closeAllModals() {
+  document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+}
+
+// click outside to close
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', (e) => {
+    if (e.target === o) o.classList.remove('active');
+  });
+});
+
+// ===========================================================
+// =================== METHOD SELECTORS ======================
+// ===========================================================
+const accountInfo = {
+  EasyPaisa: 'ACCOUNT: 0345-1234567 (BATTLEGROUNDS PK)',
+  JazzCash: 'ACCOUNT: 0301-7654321 (BATTLEGROUNDS PK)',
+  Bank: 'HBL: PK12HABB0012345678901 (BATTLEGROUNDS PK)'
+};
+
+let selectedMethod = 'EasyPaisa';
+let selectedWMethod = 'EasyPaisa';
+
+function selectMethod(el) {
+  document.querySelectorAll('[data-method]').forEach(x => x.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedMethod = el.dataset.method;
+  document.getElementById('depositAccount').textContent = accountInfo[selectedMethod];
+}
+
+function selectWMethod(el) {
+  document.querySelectorAll('[data-wmethod]').forEach(x => x.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedWMethod = el.dataset.wmethod;
+}
+
+// ===========================================================
+// ===================== DEPOSIT FLOW ========================
+// ===========================================================
+function submitDeposit() {
+  const amount = parseInt(document.getElementById('depAmount').value);
+  const txn = document.getElementById('depTxn').value.trim();
+  const sender = document.getElementById('depSender').value.trim();
+  
+  if (!amount || amount < 100) return toast('Minimum deposit PKR 100', 'error');
+  if (!txn) return toast('Transaction ID required', 'error');
+  if (!sender) return toast('Sender name required', 'error');
+  
+  const req = {
+    id: 'DEP' + Date.now(),
+    userId: state.user.id,
+    userName: state.user.name,
+    amount: amount,
+    method: selectedMethod,
+    txnId: txn,
+    sender: sender,
+    status: 'pending',
+    date: new Date().toISOString()
+  };
+  
+  state.depositRequests.unshift(req);
+  state.transactions.unshift({
+    id: req.id,
+    type: 'deposit',
+    amount: amount,
+    method: selectedMethod,
+    status: 'pending',
+    date: req.date
+  });
+  saveState();
+  
+  document.getElementById('depAmount').value = '';
+  document.getElementById('depTxn').value = '';
+  document.getElementById('depSender').value = '';
+  
+  closeModal('deposit');
+  toast('Deposit request submitted! Admin approval pending.', 'success');
+  renderAll();
+}
+
+// ===========================================================
+// ===================== WITHDRAW FLOW =======================
+// ===========================================================
+function submitWithdraw() {
+  const amount = parseInt(document.getElementById('witAmount').value);
+  const account = document.getElementById('witAccount').value.trim();
+  const name = document.getElementById('witName').value.trim();
+  
+  if (!amount || amount < 200) return toast('Minimum withdrawal PKR 200', 'error');
+  if (amount > state.user.balance) return toast('Insufficient balance!', 'error');
+  if (!account) return toast('Account number required', 'error');
+  if (!name) return toast('Account holder name required', 'error');
+  
+  // lock the balance
+  state.user.balance -= amount;
+  
+  const req = {
+    id: 'WIT' + Date.now(),
+    userId: state.user.id,
+    userName: state.user.name,
+    amount: amount,
+    method: selectedWMethod,
+    account: account,
+    holderName: name,
+    status: 'pending',
+    date: new Date().toISOString()
+  };
+  
+  state.withdrawRequests.unshift(req);
+  state.transactions.unshift({
+    id: req.id,
+    type: 'withdraw',
+    amount: amount,
+    method: selectedWMethod,
+    status: 'pending',
+    date: req.date
+  });
+  
+  // sync user balance
+  const u = state.users.find(x => x.id === state.user.id);
+  if (u) u.balance = state.user.balance;
+  
+  saveState();
+  
+  document.getElementById('witAmount').value = '';
+  document.getElementById('witAccount').value = '';
+  document.getElementById('witName').value = '';
+  
+  closeModal('withdraw');
+  toast('Withdraw request submitted! Balance locked till approval.', 'success');
+  renderAll();
+}
+
+// ===========================================================
+// ===================== MATCH JOIN ==========================
+// ===========================================================
+function showMatchDetail(matchId) {
+  const m = state.matches.find(x => x.id === matchId);
+  if (!m) return;
+  
+  const joined = state.user.joinedMatches.includes(m.id);
+  const startTime = new Date(m.startTime);
+  const now = new Date();
+  const diff = startTime - now;
+  let timeStr;
+  if (diff < 0) timeStr = 'STARTED';
+  else if (diff < 1000*60*60) timeStr = Math.floor(diff/60000) + ' MINUTES';
+  else if (diff < 1000*60*60*24) timeStr = Math.floor(diff/3600000) + ' HOURS';
+  else timeStr = Math.floor(diff/86400000) + ' DAYS';
+  
+  const html = `
+    <button class="modal-close" onclick="closeModal('match')">✕</button>
+    <div class="modal-tag">// MATCH ID: ${m.id}</div>
+    <div class="modal-title">${m.name}</div>
+    
+    <div class="detail-prize">
+      <div class="detail-prize-amt">${m.prize}</div>
+      <div class="detail-prize-label">WINNING PRIZE</div>
+    </div>
+    
+    <div class="detail-grid">
+      <div class="info-row"><div class="info-label">ENTRY FEE</div><div class="info-value" style="color: var(--orange);">PKR ${m.entry}</div></div>
+      <div class="info-row"><div class="info-label">PER KILL</div><div class="info-value" style="color: var(--green);">PKR ${m.perKill}</div></div>
+      <div class="info-row"><div class="info-label">FORMAT</div><div class="info-value">${m.format}</div></div>
+      <div class="info-row"><div class="info-label">MAP</div><div class="info-value">${m.map}</div></div>
+      <div class="info-row"><div class="info-label">SLOTS</div><div class="info-value">${m.filled}/${m.slots}</div></div>
+      <div class="info-row"><div class="info-label">STARTS IN</div><div class="info-value" style="color: var(--amber);">${timeStr}</div></div>
+    </div>
+    
+    <div class="modal-info-box" style="background: rgba(58,166,255,0.05); border-color: var(--blue); color: var(--blue);">
+      📅 ${startTime.toLocaleDateString()} • ${startTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} PKT
+    </div>
+    
+    ${joined ? `
+      <button class="submit-btn" disabled style="background: var(--green); color: #000;">✓ ALREADY JOINED</button>
+      <div class="modal-info-box" style="margin-top:14px; background: rgba(168,211,63,0.05); border-color: var(--green); color: var(--green);">
+        Room ID & Password 30 minutes before match start ke liye notification milega.
+      </div>
+    ` : `
+      <button class="submit-btn" onclick="joinMatch('${m.id}')">JOIN MATCH (PKR ${m.entry}) ▸</button>
+    `}
+  `;
+  
+  document.getElementById('matchModalContent').innerHTML = html;
+  closeAllModals();
+  document.getElementById('modalMatch').classList.add('active');
+}
+
+function joinMatch(matchId) {
+  const m = state.matches.find(x => x.id === matchId);
+  if (!m) return;
+  
+  if (state.user.balance < m.entry) {
+    toast('Insufficient balance! Deposit pehle karein.', 'error');
+    return;
+  }
+  if (m.filled >= m.slots) {
+    toast('Match slots full!', 'error');
+    return;
+  }
+  if (state.user.joinedMatches.includes(m.id)) {
+    toast('Already joined!', 'error');
+    return;
+  }
+  
+  state.user.balance -= m.entry;
+  state.user.joinedMatches.push(m.id);
+  m.filled += 1;
+  
+  state.transactions.unshift({
+    id: 'MJ' + Date.now(),
+    type: 'match-entry',
+    matchName: m.name,
+    amount: m.entry,
+    status: 'completed',
+    date: new Date().toISOString()
+  });
+  
+  // sync user
+  const u = state.users.find(x => x.id === state.user.id);
+  if (u) u.balance = state.user.balance;
+  
+  saveState();
+  closeModal('match');
+  toast(`✓ Joined ${m.name}! Room ID match se 30 min pehle bhej dia jayega.`, 'success');
+  renderAll();
+}
+
+// ===========================================================
+// ===================== ADMIN LOGIN =========================
+// ===========================================================
+function adminLogin() {
+  const pass = document.getElementById('admPass').value;
+  if (pass === 'admin123') {
+    isAdmin = true;
+    document.getElementById('app').classList.add('admin-mode');
+    document.getElementById('userNav').style.display = 'none';
+    document.getElementById('adminNav').style.display = 'grid';
+    document.getElementById('brandText').innerHTML = 'ADMIN<span>PANEL</span>';
+    document.getElementById('balancePill').innerHTML = '<span class="admin-tag">ADMIN</span>';
+    closeModal('adminLogin');
+    toast('Admin access granted', 'success');
+    navTo('adm-dash');
+  } else {
+    toast('Wrong password!', 'error');
+  }
+}
+
+function exitAdmin() {
+  isAdmin = false;
+  document.getElementById('app').classList.remove('admin-mode');
+  document.getElementById('userNav').style.display = 'grid';
+  document.getElementById('adminNav').style.display = 'none';
+  document.getElementById('brandText').innerHTML = 'BATTLE<span>GROUNDS</span>';
+  toast('Returned to user mode', 'info');
+  renderAll();
+  navTo('dashboard');
+}
+
+// ===========================================================
+// =================== ADMIN ACTIONS =========================
+// ===========================================================
+function approveDeposit(reqId) {
+  const req = state.depositRequests.find(r => r.id === reqId);
+  if (!req || req.status !== 'pending') return;
+  req.status = 'approved';
+  state.user.balance += req.amount;
+  
+  const u = state.users.find(x => x.id === req.userId);
+  if (u) u.balance = state.user.balance;
+  
+  const tx = state.transactions.find(t => t.id === reqId);
+  if (tx) tx.status = 'approved';
+  
+  saveState();
+  toast(`Deposit approved: PKR ${req.amount} added`, 'success');
+  renderAll();
+}
+
+function rejectDeposit(reqId) {
+  if (!confirm('Reject this deposit request?')) return;
+  const req = state.depositRequests.find(r => r.id === reqId);
+  if (!req || req.status !== 'pending') return;
+  req.status = 'rejected';
+  
+  const tx = state.transactions.find(t => t.id === reqId);
+  if (tx) tx.status = 'rejected';
+  
+  saveState();
+  toast('Deposit rejected', 'info');
+  renderAll();
+}
+
+function approveWithdraw(reqId) {
+  const req = state.withdrawRequests.find(r => r.id === reqId);
+  if (!req || req.status !== 'pending') return;
+  req.status = 'approved';
+  // balance was already deducted on submission
+  
+  const tx = state.transactions.find(t => t.id === reqId);
+  if (tx) tx.status = 'approved';
+  
+  saveState();
+  toast(`Withdraw approved: PKR ${req.amount} sent`, 'success');
+  renderAll();
+}
+
+function rejectWithdraw(reqId) {
+  if (!confirm('Reject and refund balance?')) return;
+  const req = state.withdrawRequests.find(r => r.id === reqId);
+  if (!req || req.status !== 'pending') return;
+  req.status = 'rejected';
+  // refund balance
+  state.user.balance += req.amount;
+  const u = state.users.find(x => x.id === req.userId);
+  if (u) u.balance = state.user.balance;
+  
+  const tx = state.transactions.find(t => t.id === reqId);
+  if (tx) tx.status = 'rejected';
+  
+  saveState();
+  toast(`Withdraw rejected. Balance refunded.`, 'info');
+  renderAll();
+}
+
+function editMatch(matchId) {
+  const m = state.matches.find(x => x.id === matchId);
+  if (!m) return;
+  editingMatchId = matchId;
+  document.getElementById('matchModalTitle').textContent = 'EDIT MATCH';
+  document.getElementById('amName').value = m.name;
+  document.getElementById('amFormat').value = m.format;
+  document.getElementById('amMap').value = m.map;
+  document.getElementById('amEntry').value = m.entry;
+  document.getElementById('amKill').value = m.perKill;
+  document.getElementById('amPrize').value = m.prize;
+  document.getElementById('amSlots').value = m.slots;
+  // datetime-local format
+  const d = new Date(m.startTime);
+  const local = new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,16);
+  document.getElementById('amTime').value = local;
+  closeAllModals();
+  document.getElementById('modalAddMatch').classList.add('active');
+}
+
+function deleteMatch(matchId) {
+  if (!confirm('Delete this match permanently?')) return;
+  state.matches = state.matches.filter(m => m.id !== matchId);
+  saveState();
+  toast('Match deleted', 'info');
+  renderAdmMatches();
+}
+
+function saveMatch() {
+  const name = document.getElementById('amName').value.trim();
+  const format = document.getElementById('amFormat').value;
+  const map = document.getElementById('amMap').value;
+  const entry = parseInt(document.getElementById('amEntry').value);
+  const perKill = parseInt(document.getElementById('amKill').value);
+  const prize = document.getElementById('amPrize').value.trim();
+  const slots = parseInt(document.getElementById('amSlots').value);
+  const time = document.getElementById('amTime').value;
+  
+  if (!name || !entry || !perKill || !prize || !slots || !time) {
+    return toast('Fill all fields!', 'error');
+  }
+  
+  if (editingMatchId) {
+    const m = state.matches.find(x => x.id === editingMatchId);
+    if (m) {
+      m.name = name; m.format = format; m.map = map;
+      m.entry = entry; m.perKill = perKill; m.prize = prize;
+      m.slots = slots; m.startTime = new Date(time).toISOString();
+    }
+    toast('Match updated', 'success');
+  } else {
+    state.matches.push({
+      id: 'M' + String(Date.now()).slice(-4),
+      name, format, map, entry, perKill, prize, slots,
+      filled: 0,
+      startTime: new Date(time).toISOString(),
+      status: 'open'
+    });
+    toast('New match added', 'success');
+  }
+  saveState();
+  closeModal('addMatch');
+  renderAdmMatches();
+}
+
+// ===========================================================
+// ===================== EDIT PROFILE ========================
+// ===========================================================
+function saveProfile() {
+  state.user.name = document.getElementById('edName').value.trim() || state.user.name;
+  state.user.ign = document.getElementById('edIgn').value.trim() || state.user.ign;
+  state.user.pubg_id = document.getElementById('edPubg').value.trim() || state.user.pubg_id;
+  state.user.city = document.getElementById('edCity').value.trim() || state.user.city;
+  state.user.phone = document.getElementById('edPhone').value.trim() || state.user.phone;
+  
+  const u = state.users.find(x => x.id === state.user.id);
+  if (u) { u.name = state.user.name; u.ign = state.user.ign; }
+  
+  saveState();
+  closeModal('editProfile');
+  toast('Profile updated', 'success');
+  renderAll();
+}
+
+// ===========================================================
+// ===================== TAB SWITCHER ========================
+// ===========================================================
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+  document.getElementById('historyMatches').style.display = tab === 'matches' ? 'block' : 'none';
+  document.getElementById('historyTransactions').style.display = tab === 'transactions' ? 'block' : 'none';
+}
+
+// ===========================================================
+// ======================== RENDER ===========================
+// ===========================================================
+function fmt(n) { return Number(n).toLocaleString(); }
+
+function timeUntil(iso) {
+  const diff = new Date(iso) - new Date();
+  if (diff < 0) return { label: 'STARTED', color: 'var(--red)' };
+  if (diff < 60*60*1000) return { label: Math.floor(diff/60000) + 'M', color: 'var(--red)' };
+  if (diff < 24*60*60*1000) return { label: Math.floor(diff/3600000) + 'H', color: 'var(--amber)' };
+  return { label: Math.floor(diff/86400000) + 'D', color: 'var(--green)' };
+}
+
+function renderHeader() {
+  document.getElementById('balanceText').textContent = 'PKR ' + fmt(state.user.balance);
+}
+
+function renderDashboard() {
+  document.getElementById('greetName').innerHTML = `HELLO, <span>${state.user.name.split(' ')[0]}</span>`;
+  document.getElementById('dashBalance').textContent = fmt(state.user.balance);
+  document.getElementById('statMatches').textContent = state.user.matchesPlayed;
+  document.getElementById('statKills').textContent = state.user.totalKills;
+  document.getElementById('statWins').textContent = state.user.totalWins;
+  
+  const upcoming = state.matches.filter(m => m.status !== 'done').slice(0, 2);
+  document.getElementById('dashMatches').innerHTML = upcoming.map(matchCardHTML).join('') || emptyState('No upcoming matches');
+}
+
+function renderMatches() {
+  const all = state.matches.filter(m => m.status !== 'done');
+  document.getElementById('allMatches').innerHTML = all.map(matchCardHTML).join('') || emptyState('No matches available');
+}
+
+function matchCardHTML(m) {
+  const t = timeUntil(m.startTime);
+  const joined = state.user.joinedMatches.includes(m.id);
+  const full = m.filled >= m.slots;
+  const statusClass = joined ? 's-open' : full ? 's-full' : (m.status === 'soon' ? 's-soon' : 's-open');
+  const statusText = joined ? '✓ JOINED' : full ? 'FULL' : m.status === 'soon' ? 'SOON' : 'OPEN';
+  
+  return `
+    <div class="match-card" onclick="showMatchDetail('${m.id}')">
+      <div class="match-head">
+        <span class="match-status ${statusClass}">${statusText}</span>
+        <span class="match-id">${m.id} • ${m.format}</span>
+      </div>
+      <div class="match-title">${m.name}</div>
+      <div class="match-info-grid">
+        <div class="mi-item">
+          <div class="mi-label">ENTRY</div>
+          <div class="mi-val">PKR ${m.entry}</div>
+        </div>
+        <div class="mi-item">
+          <div class="mi-label">PER KILL</div>
+          <div class="mi-val kill">PKR ${m.perKill}</div>
+        </div>
+        <div class="mi-item">
+          <div class="mi-label">PRIZE</div>
+          <div class="mi-val prize">${m.prize}</div>
+        </div>
+      </div>
+      <div class="match-foot">
+        <div class="match-time" style="color: ${t.color};">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm4.2 14.2L11 13V7h1.5v5.2l4.5 2.7-.8 1.3z"/></svg>
+          STARTS IN ${t.label}
+        </div>
+        <div class="match-slots"><span>${m.filled}</span>/${m.slots}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderHistory() {
+  // matches
+  const mh = state.matchHistory;
+  document.getElementById('historyMatches').innerHTML = mh.length ? mh.map(h => `
+    <div class="history-item">
+      <div>
+        <div class="hi-title">${h.matchName}</div>
+        <div class="hi-meta">${new Date(h.date).toLocaleDateString()} • ${h.kills} KILLS • #${h.position}</div>
+      </div>
+      <div class="hi-amount ${h.winnings > 0 ? 'plus' : 'minus'}">${h.winnings > 0 ? '+' : ''}${fmt(h.winnings)}</div>
+    </div>
+  `).join('') : emptyState('Koi match history nahi');
+  
+  // transactions
+  const tx = state.transactions;
+  document.getElementById('historyTransactions').innerHTML = tx.length ? tx.map(t => {
+    const isCredit = t.type === 'deposit' || (t.type === 'match-win');
+    const sign = isCredit ? '+' : '-';
+    const cls = isCredit ? 'plus' : 'minus';
+    const title = t.type === 'deposit' ? 'DEPOSIT' : t.type === 'withdraw' ? 'WITHDRAW' : t.type === 'match-entry' ? `MATCH: ${t.matchName}` : 'TRANSACTION';
+    return `
+      <div class="history-item">
+        <div>
+          <div class="hi-title">${title}</div>
+          <div class="hi-meta">${new Date(t.date).toLocaleString()}${t.method ? ' • ' + t.method : ''}</div>
+          <div class="hi-status ${t.status}">${t.status.toUpperCase()}</div>
+        </div>
+        <div class="hi-amount ${cls}">${sign}${fmt(t.amount)}</div>
+      </div>
+    `;
+  }).join('') : emptyState('Koi transactions nahi');
+}
+
+function renderProfile() {
+  const initials = state.user.name.split(' ').map(s => s[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('profAvatar').textContent = initials;
+  document.getElementById('profName').textContent = state.user.name;
+  document.getElementById('profId').textContent = `${state.user.id} // ${state.user.ign}`;
+  document.getElementById('psMatches').textContent = state.user.matchesPlayed;
+  document.getElementById('psKills').textContent = state.user.totalKills;
+  document.getElementById('psEarn').textContent = fmt(state.user.totalEarned);
+  document.getElementById('infoPubgId').textContent = state.user.pubg_id;
+  document.getElementById('infoIgn').textContent = state.user.ign;
+  document.getElementById('infoPhone').textContent = state.user.phone;
+  document.getElementById('infoCity').textContent = state.user.city;
+}
+
+function renderAdminDash() {
+  const pendDep = state.depositRequests.filter(r => r.status === 'pending').length;
+  const pendWit = state.withdrawRequests.filter(r => r.status === 'pending').length;
+  document.getElementById('admPendDep').textContent = pendDep;
+  document.getElementById('admPendWit').textContent = pendWit;
+  document.getElementById('admTotalMatch').textContent = state.matches.length;
+  document.getElementById('admTotalUsers').textContent = state.users.length;
+}
+
+function renderAdmDeposits() {
+  const reqs = state.depositRequests;
+  document.getElementById('admDepList').innerHTML = reqs.length ? reqs.map(r => `
+    <div class="request-card">
+      <div class="req-head">
+        <div>
+          <div class="req-user">${r.userName}</div>
+          <div class="req-id">${r.id} • ${r.userId}</div>
+        </div>
+        <div class="req-date">${new Date(r.date).toLocaleString()}</div>
+      </div>
+      <div class="req-amount">PKR ${fmt(r.amount)}</div>
+      <div class="req-detail"><span>METHOD</span><span style="color: var(--text);">${r.method}</span></div>
+      <div class="req-detail"><span>TXN ID</span><span style="color: var(--text);">${r.txnId}</span></div>
+      <div class="req-detail"><span>SENDER</span><span style="color: var(--text);">${r.sender}</span></div>
+      <div class="req-detail"><span>STATUS</span><span class="hi-status ${r.status}" style="margin-top:0;">${r.status.toUpperCase()}</span></div>
+      ${r.status === 'pending' ? `
+        <div class="req-actions">
+          <button class="btn-approve" onclick="approveDeposit('${r.id}')">✓ APPROVE</button>
+          <button class="btn-reject" onclick="rejectDeposit('${r.id}')">✕ REJECT</button>
+        </div>
+      ` : ''}
+    </div>
+  `).join('') : emptyState('No deposit requests yet');
+}
+
+function renderAdmWithdraws() {
+  const reqs = state.withdrawRequests;
+  document.getElementById('admWitList').innerHTML = reqs.length ? reqs.map(r => `
+    <div class="request-card">
+      <div class="req-head">
+        <div>
+          <div class="req-user">${r.userName}</div>
+          <div class="req-id">${r.id} • ${r.userId}</div>
+        </div>
+        <div class="req-date">${new Date(r.date).toLocaleString()}</div>
+      </div>
+      <div class="req-amount" style="color: var(--amber);">PKR ${fmt(r.amount)}</div>
+      <div class="req-detail"><span>METHOD</span><span style="color: var(--text);">${r.method}</span></div>
+      <div class="req-detail"><span>ACCOUNT</span><span style="color: var(--text);">${r.account}</span></div>
+      <div class="req-detail"><span>HOLDER</span><span style="color: var(--text);">${r.holderName}</span></div>
+      <div class="req-detail"><span>STATUS</span><span class="hi-status ${r.status}" style="margin-top:0;">${r.status.toUpperCase()}</span></div>
+      ${r.status === 'pending' ? `
+        <div class="req-actions">
+          <button class="btn-approve" onclick="approveWithdraw('${r.id}')">✓ APPROVE & SEND</button>
+          <button class="btn-reject" onclick="rejectWithdraw('${r.id}')">✕ REJECT</button>
+        </div>
+      ` : ''}
+    </div>
+  `).join('') : emptyState('No withdraw requests yet');
+}
+
+function renderAdmMatches() {
+  document.getElementById('admMatchList').innerHTML = state.matches.map(m => {
+    const t = timeUntil(m.startTime);
+    return `
+    <div class="adm-match-card">
+      <div class="amc-head">
+        <div>
+          <div class="match-title" style="font-size:20px; margin-bottom:4px;">${m.name}</div>
+          <div class="match-id">${m.id} • ${m.format} • ${m.map}</div>
+        </div>
+        <span class="match-status s-open">${t.label}</span>
+      </div>
+      <div class="match-info-grid" style="margin: 10px 0;">
+        <div class="mi-item"><div class="mi-label">ENTRY</div><div class="mi-val">${m.entry}</div></div>
+        <div class="mi-item"><div class="mi-label">KILL</div><div class="mi-val kill">${m.perKill}</div></div>
+        <div class="mi-item"><div class="mi-label">PRIZE</div><div class="mi-val prize">${m.prize}</div></div>
+      </div>
+      <div class="match-slots" style="margin-bottom: 8px;"><span>${m.filled}</span>/${m.slots} SLOTS FILLED</div>
+      <div class="amc-actions">
+        <button class="btn-edit" onclick="editMatch('${m.id}')">EDIT</button>
+        <button class="btn-delete" onclick="deleteMatch('${m.id}')">DELETE</button>
+      </div>
+    </div>
+    `;
+  }).join('') || emptyState('No matches. Add one with the + button');
+}
+
+function renderAdmUsers() {
+  document.getElementById('admUserList').innerHTML = state.users.map(u => {
+    const initials = u.name.split(' ').map(s => s[0]).join('').slice(0,2).toUpperCase();
+    return `
+      <div class="user-row">
+        <div class="avatar">${initials}</div>
+        <div>
+          <div class="ur-name">${u.name}</div>
+          <div class="ur-id">${u.id} • ${u.ign}</div>
+        </div>
+        <div class="ur-balance">PKR ${fmt(u.balance)}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function emptyState(msg) {
+  return `
+    <div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+      <div class="empty-state-text">${msg}</div>
+    </div>
+  `;
+}
+
+function renderAll() {
+  renderHeader();
+  renderDashboard();
+  renderProfile();
+  if (isAdmin) {
+    renderAdminDash();
+    renderAdmDeposits();
+    renderAdmWithdraws();
+    renderAdmMatches();
+    renderAdmUsers();
+  }
+}
+
+// ===========================================================
+// ===================== INITIALIZE ==========================
+// ===========================================================
+renderAll();
+
+// keep time-displays fresh
+setInterval(() => {
+  const active = document.querySelector('.screen.active');
+  if (!active) return;
+  const s = active.dataset.screen;
+  if (s === 'dashboard') renderDashboard();
+  if (s === 'matches') renderMatches();
+  if (s === 'adm-matches') renderAdmMatches();
+}, 60000);
+</script>
+
 </body>
 </html>
-
